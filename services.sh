@@ -18,11 +18,11 @@ loadData () {
 	addDatabaseIndex
 	waitForOrion
 	docker run --rm -v $(pwd)/data/import-data.sh:/import-data.sh \
-		--network fiware_default -e ORION_PORT="${ORION_PORT}" \
+		--network smartufc_main-net -e ORION_PORT="${ORION_PORT}" \
 		--entrypoint /bin/ash curlimages/curl import-data.sh
 	waitForIoTAgent
 	docker run --rm -v $(pwd)/data/provision-devices.sh:/provision-devices.sh \
-		--network fiware_default -e ORION_PORT="${ORION_PORT}" \
+		--network smartufc_main-net -e ORION_PORT="${ORION_PORT}" \
 		-e IOTA_NORTH_PORT="${IOTA_NORTH_PORT}" \
 		--entrypoint /bin/ash curlimages/curl provision-devices.sh
 	echo ""
