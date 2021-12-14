@@ -22,11 +22,11 @@ curl -s -o /dev/null -X POST \
   -d '{
  "services": [
    {
-     "apikey":      "scggokgpepnvsb2uv4s40d59oo",
-     "cbroker":     "'"http://orion:$ORION_PORT"'",
-     "entity_type": "Thing",
-     "timezone":    "America/Fortaleza",
-     "resource":    ""
+     "apikey":"scggokgpepnvsb2uv4s40d59oo",
+     "cbroker":"'"http://orion:$ORION_PORT"'",
+     "entity_type":"Thing",
+     "timezone":"America/Fortaleza",
+     "resource":""
    }
  ]
 }'
@@ -39,13 +39,13 @@ curl -s -o /dev/null -X POST \
   -d '{
  "devices": [
    {
-     "device_id":   "temperatureSensor001001001",
-     "entity_name": "urn:ngsi-ld:TemperatureSensor:001001001",
-     "entity_type": "TemperatureSensor",
-     "protocol":    "PDI-IoTA-UltraLight",
-     "transport":   "MQTT",
-     "timezone":    "America/Fortaleza",
-     "attributes": [
+     "device_id":"temperatureSensor001001001",
+     "entity_name":"urn:ngsi-ld:TemperatureSensor:001001001",
+     "entity_type":"TemperatureSensor",
+     "protocol":"PDI-IoTA-UltraLight",
+     "transport":"MQTT",
+     "timezone":"America/Fortaleza",
+     "attributes":[
        { "object_id": "t", "name": "temperature", "type": "Float"},
        { "object_id": "h", "name": "humidity", "type": "Float"}
      ],
