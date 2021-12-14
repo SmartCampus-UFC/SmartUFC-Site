@@ -9,7 +9,7 @@ dockerCmd="docker-compose"
 
 if (( $# < 1 )); then
     echo "Illegal number of parameters"
-    echo "usage: services [create|cygnus|sth-comet|stop]"
+    echo "usage: services [create|start|stop|help]"
     exit 1
 fi
 
@@ -17,25 +17,20 @@ loadData () {
 	waitForMongo
 	addDatabaseIndex
 	waitForOrion
-	docker run --rm -v $(pwd)/import-data:/import-data \
-		--network fiware_default \
-		-e ORION_PORT="${ORION_PORT}" \
-		-e TUTORIAL_APP_PORT="${TUTORIAL_APP_PORT}" \
-		--entrypoint /bin/ash curlimages/curl import-data
+	docker run --rm -v $(pwd)/data/import-data.sh:/import-data.sh \
+		--network fiware_default -e ORION_PORT="${ORION_PORT}" \
+		--entrypoint /bin/ash curlimages/curl import-data.sh
 	waitForIoTAgent
-	docker run --rm -v $(pwd)/provision-devices:/provision-devices \
-		--network fiware_default \
-		-e ORION_PORT="${ORION_PORT}" \
-		-e TUTORIAL_APP_PORT="${TUTORIAL_APP_PORT}" \
-		-e TUTORIAL_DUMMY_DEVICE_PORT="${TUTORIAL_DUMMY_DEVICE_PORT}" \
+	docker run --rm -v $(pwd)/data/provision-devices.sh:/provision-devices.sh \
+		--network fiware_default -e ORION_PORT="${ORION_PORT}" \
 		-e IOTA_NORTH_PORT="${IOTA_NORTH_PORT}" \
-		--entrypoint /bin/ash curlimages/curl provision-devices
+		--entrypoint /bin/ash curlimages/curl provision-devices.sh
 	echo ""
 }
 
 stoppingContainers () {
 	echo "Stopping running containers"
-	${dockerCmd} -f docker-compose/cygnus-sth-comet.yml down -v --remove-orphans
+	${dockerCmd} -f docker-compose.yml down -v --remove-orphans
 }
 
 displayServices () {
@@ -96,9 +91,8 @@ waitForOrion () {
 }
 
 waitForIoTAgent () {
-	echo -e "\n⏳ Waiting for \033[1;36mIoT-Agent\033[0m to be available\n"
+	echo -e "\n Waiting for \033[1;36mIoT-Agent\033[0m to be available\n"
 	while ! [ `docker inspect --format='{{.State.Health.Status}}' fiware-iot-agent` == "healthy" ]
-
 	do 
 	  echo -e "IoT Agent HTTP state: " `curl -s -o /dev/null -w %{http_code} 'http://localhost:4041/version'` " (waiting for 200)"
 	  sleep 1
@@ -136,7 +130,7 @@ case "${command}" in
 		;;
 	*)
 		echo "Command not Found."
-		echo "usage: services [create|start|stop]"
+		echo "usage: services [create|start|stop|help]"
 		exit 127;
 		;;
 esac
