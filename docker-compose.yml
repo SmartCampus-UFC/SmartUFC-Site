@@ -91,6 +91,7 @@ services:
       - IOTA_MONGO_DB=iotagentul # The name of the database used in mongoDB
       - IOTA_MQTT_HOST=${MOSQUITTO_HOST} # The host name of the MQTT Broker
       - IOTA_MQTT_PORT=${MOSQUITTO_PORT} # The port the MQTT Broker is listening on to receive topics
+      - IOTA_MQTT_KEEPALIVE=60
       - IOTA_DEFAULT_RESOURCE= # Default is blank. I'm using MQTT so I don't need a resource      
       - IOTA_PROVIDER_URL=http://iot-agent:${IOTA_NORTH_PORT}
     healthcheck:

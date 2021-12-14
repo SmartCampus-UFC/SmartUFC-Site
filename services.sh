@@ -50,8 +50,8 @@ addDatabaseIndex () {
 	db.entities.createIndex({"_id.id": 1});' > /dev/null
 
 	docker exec  db-mongo mongo --eval '
-	conn = new Mongo();db.createCollection("orion-openiot");
-	db = conn.getDB("orion-openiot");
+	conn = new Mongo();db.createCollection("orion-smartufc");
+	db = conn.getDB("orion-smartufc");
 	db.createCollection("entities");
 	db.entities.createIndex({"_id.servicePath": 1, "_id.id": 1, "_id.type": 1}, {unique: true});
 	db.entities.createIndex({"_id.type": 1}); 

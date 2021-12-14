@@ -94,7 +94,7 @@ curl -s -o /dev/null -X POST \
   		"refBuilding":{"type":"Relationship","value":"urn:ngsi-ld:Building:002"}
   	},
       {
-  		"id":"urn:ngsi-ld:Room:002","type":"Room",
+  		"id":"urn:ngsi-ld:Room:003","type":"Room",
   		"name":{"type":"Text","value":"Sala 2"},
           "description":{"type":"Text","value":"Sala 2 do Bloco 1 da UFC - Campus Quixada"},            
           "category":{"type":"Array","value":["classroom"]},
