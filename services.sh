@@ -102,7 +102,7 @@ waitForIoTAgent () {
 command="$1"
 case "${command}" in
 	"help")
-        echo "usage: services [create|cygnus|sth-comet|stop]"    	 
+        echo "usage: services [create|start|stop]"    	 
 		;;
 	"stop")
 		export $(cat .env | grep "#" -v)
@@ -111,12 +111,11 @@ case "${command}" in
 	"start")
 		export $(cat .env | grep "#" -v)
 		stoppingContainers
-		echo -e "Starting containers: \033[1;34mOrion\033[0m, \033[1;34mCygnus\033[0m, \033[1;34mSTH-Comet\033[0m, \033[1;36mIoT-Agent\033[0m, \033[1mMongoDB\033[0m database and a \033[1mMosquitto\033[0m broker."	
+		echo -e "Starting containers: \033[1;34mOrion\033[0m, \033[1;34mQuantumLeap\033[0m, \033[1;36mIoT-Agent\033[0m, \033[1mTutorial\033[0m, a \033[1mGrafana\033[0m metrics dashboard, \033[1mCrateDB\033[0m and \033[1mMongoDB\033[0m databases and a \033[1mRedis\033[0m cache."
 		echo -e "- \033[1;34mOrion\033[0m is the context broker"
-		echo -e "- \033[1;34mCygnus\033[0m is configured to write context data to Mongo-DB"
-		echo -e "- \033[1;34mSTH-Comet\033[0m is reading context data from Mongo-DB"
+		echo -e "- \033[1;34mQuantumLeap\033[0m will write to CrateDB"
+		echo -e "- \033[1mGrafana\033[0m will read from CrateDB"
 		echo -e "- \033[1;36mIoT-Agent\033[0m is configured for the UltraLight Protocol"
-		echo -e "- \033[1mMosquitto\033[0m acts as a series of IoT Sensors"
 		echo ""
 		${dockerCmd} -f docker-compose.yml up -d --remove-orphans
 		loadData

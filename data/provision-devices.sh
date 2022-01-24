@@ -40,14 +40,14 @@ curl -s -o /dev/null -X POST \
  "devices": [
    {
      "device_id":"temperatureSensor001001001",
-     "entity_name":"urn:ngsi-ld:TemperatureSensor:001001001",
+     "entity_name":"TemperatureSensor:001001001",
      "entity_type":"TemperatureSensor",
      "protocol":"PDI-IoTA-UltraLight",
      "transport":"MQTT",
      "timezone":"America/Fortaleza",
      "attributes":[
-       { "object_id": "t", "name": "temperature", "type": "Float"},
-       { "object_id": "h", "name": "humidity", "type": "Float"}
+       { "object_id": "t", "name": "temperature", "type": "Number"},
+       { "object_id": "h", "name": "humidity", "type": "Number"}
      ],
      "static_attributes": [
        { "name":"refRoom", "type": "Relationship", "value": "urn:ngsi-ld:Room:001"}
@@ -56,5 +56,36 @@ curl -s -o /dev/null -X POST \
  ]
 }
 '
+
+curl -s -o /dev/null -X POST \
+  'http://orion:1026/v2/subscriptions/' \
+  -H 'Content-Type: application/json' \
+  -H 'fiware-service: smartufc' \
+  -H 'fiware-servicepath: /campuspici/building/bloco942a' \
+  -d '{
+  "description": "Notify QuantumLeap of temperature and humidity changes of any UHT Sensor",
+  "subject": {
+    "entities": [
+      {
+        "idPattern": "TemperatureSensor.*"
+      }
+    ],
+    "condition": {
+      "attrs": [
+        "temperature","humidity"
+      ]
+    }
+  },
+  "notification": {
+    "http": {
+      "url": "http://quantumleap:8668/v2/notify"
+    },
+    "attrs": [
+      "temperature","humidity"
+    ],
+    "metadata": ["dateCreated", "dateModified"]
+  },
+  "throttling": 1
+}'
 
 echo -e " \033[1;32mdone\033[0m"

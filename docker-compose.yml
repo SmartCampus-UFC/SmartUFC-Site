@@ -18,50 +18,25 @@ services:
       test: curl --fail -s http://orion:${ORION_PORT}/version || exit 1
       interval: 5s
 
-  # Cygnus is configured to persist to STH-Comet
-  cygnus:
-    image: fiware/cygnus-ngsi:${CYGNUS_VERSION}
-    hostname: cygnus
-    container_name: fiware-cygnus
-    depends_on:
-      - mongo-db
-    networks:
-      - main-net
-    expose:
-      - "${CYGNUS_API_PORT}"
-      - "${CYGNUS_MONGO_SERVICE_PORT}"
-    ports:
-      - "${CYGNUS_MONGO_SERVICE_PORT}:${CYGNUS_MONGO_SERVICE_PORT}" # localhost:5051
-      - "${CYGNUS_API_PORT}:${CYGNUS_API_PORT}" # localhost:5080
-    environment:
-      - "CYGNUS_MONGO_SERVICE_PORT=${CYGNUS_MONGO_SERVICE_PORT}" # Port that Cygnus listens on for operational reasons
-      - "CYGNUS_MONGO_HOSTS=mongo-db:${MONGO_DB_PORT}" # Comma separated list of Mongo-DB servers which Cygnus will contact to persist historical context data
-      - "CYGNUS_SERVICE_PORT=${CYGNUS_MONGO_SERVICE_PORT}"
-      - "CYGNUS_API_PORT=${CYGNUS_API_PORT}" # Port that Cygnus listens on for operational reasons
-      - "CYGNUS_LOG_LEVEL=${LOG_LEVEL}" # The logging level for Cygnus
-    healthcheck:
-      test: curl --fail -s http://cygnus:${CYGNUS_API_PORT}/v1/version || exit 1
-
-  # STH-Comet is persisting Short Term History to Mongo-DB
-  sth-comet:
-    image: fiware/sth-comet:${STH_COMET_VERSION}
-    hostname: sth-comet
-    container_name: fiware-sth-comet
-    depends_on:
-      - cygnus
-      - mongo-db
+  # Quantum Leap is persisting Short Term History to Crate-DB
+  quantumleap:
+    image: orchestracities/quantumleap:${QUANTUMLEAP_VERSION}
+    hostname: quantumleap
+    container_name: fiware-quantumleap
     networks:
       - main-net
     ports:
-      - "${STH_COMET_PORT}:${STH_COMET_PORT}" # localhost:8666
+      - "${QUANTUMLEAP_PORT}:${QUANTUMLEAP_PORT}"
+    depends_on:
+      - crate-db
+      - redis-db
     environment:
-      - STH_HOST=0.0.0.0
-      - STH_PORT=${STH_COMET_PORT}
-      - DB_PREFIX=sth_
-      - DB_URI=mongo-db:${MONGO_DB_PORT}
-      - LOGOPS_LEVEL=${LOG_LEVEL}
+      - CRATE_HOST=crate-db
+      - REDIS_HOST=redis-db
+      - REDIS_PORT=${REDIS_PORT}
+      - LOGLEVEL=DEBUG
     healthcheck:
-      test: curl --fail -s http://sth-comet:${STH_COMET_PORT}/version || exit 1
+      test: curl --fail -s http://quantumleap:${QUANTUMLEAP_PORT}/version || exit 1
 
   # IoT-Agent is configured for the UltraLight Protocol
   iot-agent:
@@ -116,6 +91,50 @@ services:
         mongo --quiet $host/test --eval 'quit(db.runCommand({ ping: 1 }).ok ? 0 : 2)' && echo 0 || echo 1
       interval: 5s
 
+  crate-db:
+    image: crate:${CRATE_VERSION}
+    hostname: crate-db
+    container_name: db-crate
+    networks:
+      - main-net
+    ports:
+      # Admin UI
+      - "4200:4200"
+      # Transport protocol
+      - "4300:4300"
+    command: crate -Cauth.host_based.enabled=false  -Ccluster.name=democluster -Chttp.cors.enabled=true -Chttp.cors.allow-origin="*"
+    environment:
+      - CRATE_HEAP_SIZE=2g # see https://crate.io/docs/crate/howtos/en/latest/deployment/containers/docker.html#troubleshooting
+    volumes:
+      - crate-db:/data
+
+  redis-db:
+    image: redis:${REDIS_VERSION}
+    hostname: redis-db
+    container_name: db-redis
+    networks:
+      - main-net
+    ports:
+      - "${REDIS_PORT}:${REDIS_PORT}" # localhost:6379
+    volumes:
+      - redis-db:/data
+
+  # Other services
+  grafana:
+    image: grafana/grafana:6.1.6
+    container_name: grafana
+    networks:
+      - main-net
+    depends_on:
+      - crate-db
+    ports:
+      - "8080:3000"
+    environment:
+      - GF_INSTALL_PLUGINS=https://github.com/orchestracities/grafana-map-plugin/archive/master.zip;grafana-map-plugin,grafana-clock-panel,grafana-worldmap-panel
+    volumes:
+      - grafana:/var/lib/grafana
+
+
   # Mosquitto
   # mosquitto:
   #   image: eclipse-mosquitto:1.6.14
@@ -141,3 +160,6 @@ networks:
 
 volumes:
   mongo-db: ~
+  crate-db: ~
+  redis-db: ~
+  grafana: ~
