@@ -54,8 +54,32 @@ curl -s -o /dev/null -X POST \
      ]
    }
  ]
-}
-'
+}'
+
+curl -s -o /dev/null -X POST \
+  "http://iot-agent:$IOTA_NORTH_PORT/iot/devices" \
+  -H 'Content-Type: application/json' \
+  -H 'fiware-service: smartufc' \
+  -H 'fiware-servicepath: /campuspici/building/bloco942a' \
+  -d '{
+ "devices": [
+   {
+     "device_id":"airConditioner001001001",
+     "entity_name":"AirConditioner:001001001",
+     "entity_type":"InfraredDevice",
+     "protocol":"PDI-IoTA-UltraLight",
+     "transport":"MQTT",
+     "timezone":"America/Fortaleza",
+     "commands": [
+        { "name": "infrared", "type": "command" }
+     ],
+     "static_attributes": [
+       { "name":"refRoom", "type": "Relationship", "value": "urn:ngsi-ld:Room:001"}
+     ]
+   }
+ ]
+}'
+
 
 curl -s -o /dev/null -X POST \
   'http://orion:1026/v2/subscriptions/' \
