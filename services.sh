@@ -6,6 +6,7 @@
 set -e
 
 dockerCmd="docker-compose"
+campus="quixada"
 
 if (( $# < 1 )); then
     echo "Illegal number of parameters"
@@ -17,11 +18,11 @@ loadData () {
 	waitForMongo
 	addDatabaseIndex
 	waitForOrion
-	docker run --rm -v $(pwd)/data/import-data.sh:/import-data.sh \
+	docker run --rm -v $(pwd)/data/import-data/campus-${campus}-data.sh:/import-data.sh \
 		--network smartufc_main-net -e ORION_PORT="${ORION_PORT}" \
 		--entrypoint /bin/ash curlimages/curl import-data.sh
 	waitForIoTAgent
-	docker run --rm -v $(pwd)/data/provision-devices.sh:/provision-devices.sh \
+	docker run --rm -v $(pwd)/data/provision-devices/campus-${campus}-devices.sh:/provision-devices.sh \
 		--network smartufc_main-net -e ORION_PORT="${ORION_PORT}" \
 		-e IOTA_NORTH_PORT="${IOTA_NORTH_PORT}" \
 		--entrypoint /bin/ash curlimages/curl provision-devices.sh
