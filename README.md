@@ -1,2 +1,3 @@
-# Smart-Campus-UFC
-Scripts to deploy a FIWARE site
+# SmartUFC-Site
+
+Scripts to deploy a SmartUFC site
