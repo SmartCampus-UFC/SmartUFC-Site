@@ -85,7 +85,7 @@ curl -s -o /dev/null -X POST \
   'http://orion:1026/v2/subscriptions/' \
   -H 'Content-Type: application/json' \
   -H 'fiware-service: smartufc' \
-  -H 'fiware-servicepath: /campuspici/building/bloco942a' \
+  -H 'fiware-servicepath: /campusquixada/building/bloco1' \
   -d '{
   "description": "Notify QuantumLeap of temperature and humidity changes of any UHT Sensor",
   "subject": {
