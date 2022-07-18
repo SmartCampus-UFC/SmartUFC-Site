@@ -43,9 +43,10 @@ services:
     image: fiware/iotagent-ul:${ULTRALIGHT_VERSION}
     hostname: iot-agent
     container_name: fiware-iot-agent
-    depends_on:
-      - mongo-db
-      #- mosquitto
+    depends_on:      
+      - orion
+      - mosquitto
+      #- mqttprovider
     networks:
       - main-net
     expose:
@@ -121,18 +122,19 @@ services:
 
   # Other services
   grafana:
-    image: grafana/grafana:6.1.6
+    image: grafana/grafana:${GRAFANA_VERSION}
+    user: "${USER_ID}"
     container_name: grafana
     networks:
       - main-net
     depends_on:
       - crate-db
     ports:
-      - "8080:3000"
+      - "80:3000"
     environment:
       - GF_INSTALL_PLUGINS=https://github.com/orchestracities/grafana-map-plugin/archive/master.zip;grafana-map-plugin,grafana-clock-panel,grafana-worldmap-panel
     volumes:
-      - grafana:/var/lib/grafana
+      - ${GRAFANA_DATA_PATH}:/var/lib/grafana
 
 
   # Mosquitto
@@ -151,6 +153,21 @@ services:
     networks:
       - main-net
 
+  # MQTT Provider
+  #mqttprovider:
+  #image: mqttprovider
+  #hostname: mqttprovider
+  #container_name: mqttprovider
+  #restart: always
+  #depends_on:
+  #   - mosquitto
+  #environment:      
+  #   - MOSQUITTO_HOST=${MOSQUITTO_HOST} # The host name of the MQTT Broker
+  #   - MOSQUITTO_PORT=${MOSQUITTO_PORT} # The port the MQTT Broker is listening on to receive topics
+  # networks:
+  #   - main-net
+
+
 # Network
 networks:
   main-net:
@@ -162,4 +179,4 @@ volumes:
   mongo-db: ~
   crate-db: ~
   redis-db: ~
-  grafana: ~
+  #grafana: ~

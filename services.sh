@@ -4,7 +4,7 @@
 #
 
 set -e
-
+export USER_ID=$(id -u)
 dockerCmd="docker-compose"
 campus="quixada"
 
@@ -100,6 +100,23 @@ waitForIoTAgent () {
 	done
 }
 
+startMqttProvider () {
+	echo -e "\n Starting MQTT Provider \n"
+	docker run -d --network smartufc_main-net --name mqttprovider --hostname mqttprovider --restart always -e MOSQUITTO_HOST='mosquitto' -e MOSQUITTO_PORT='1883' mqttprovider
+	echo ""
+}
+
+stopMqttProvider () {
+	echo -e "\n Stopping MQTT Provider\n"
+	if [ $( docker ps -a | grep mqttprovider | wc -l ) -gt 0 ]; then
+  		docker stop mqttprovider
+        	docker rm mqttprovider
+	else
+	  	echo "MQTT provider container does not exist"
+	fi
+	echo ""
+}
+
 command="$1"
 case "${command}" in
 	"help")
@@ -107,10 +124,12 @@ case "${command}" in
 		;;
 	"stop")
 		export $(cat .env | grep "#" -v)
+		stopMqttProvider
 		stoppingContainers
 		;;
 	"start")
 		export $(cat .env | grep "#" -v)
+		stopMqttProvider
 		stoppingContainers
 		echo -e "Starting containers: \033[1;34mOrion\033[0m, \033[1;34mQuantumLeap\033[0m, \033[1;36mIoT-Agent\033[0m, \033[1mTutorial\033[0m, a \033[1mGrafana\033[0m metrics dashboard, \033[1mCrateDB\033[0m and \033[1mMongoDB\033[0m databases and a \033[1mRedis\033[0m cache."
 		echo -e "- \033[1;34mOrion\033[0m is the context broker"
@@ -119,7 +138,10 @@ case "${command}" in
 		echo -e "- \033[1;36mIoT-Agent\033[0m is configured for the UltraLight Protocol"
 		echo ""
 		${dockerCmd} -f docker-compose.yml up -d --remove-orphans
+		sleep 60
 		loadData
+		sleep 10
+		startMqttProvider
 		displayServices
 		;;
 	"create")

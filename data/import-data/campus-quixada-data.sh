@@ -39,7 +39,7 @@ curl -s -o /dev/null -X POST \
   "actionType": "append",
   "entities": [
 	{
-	  "id":"urn:ngsi-ld:Building:002","type":"Building",
+	  "id":"urn:ngsi-ld:Building:001","type":"Building",
   	  "name":{"type":"Text","value":"Bloco 1"},
 	  "description":{"type":"Text","value":"Bloco 1 da UFC - Campus Quixada"},
 	  "category":{"type":"Array","value":["classroom", "laboratory", "kitchen", "bathroom", "hall", "projectRoom", "meetingRoom", "telecommunicationsRoom", "facultyRoom"]},
@@ -60,20 +60,20 @@ curl -s -o /dev/null -X POST \
   "actionType": "append",
   "entities": [
         {
-          "id":"urn:ngsi-ld:Room:002","type":"Room",
+          "id":"urn:ngsi-ld:Room:001","type":"Room",
 	  "name":{"type":"Text","value":"Sala 1"},
 	  "description":{"type":"Text","value":"Sala 1 do Bloco 1 da UFC - Campus Quixada"},
 	  "category":{"type":"Array","value":["classroom"]},
 	  "floor":{"type":"Integer","value":1},
-	  "refBuilding":{"type":"Relationship","value":"urn:ngsi-ld:Building:002"}
+	  "refBuilding":{"type":"Relationship","value":"urn:ngsi-ld:Building:001"}
         },
         {
-  	  "id":"urn:ngsi-ld:Room:003","type":"Room",
+  	  "id":"urn:ngsi-ld:Room:002","type":"Room",
 	  "name":{"type":"Text","value":"Sala 2"},
 	  "description":{"type":"Text","value":"Sala 2 do Bloco 1 da UFC - Campus Quixada"},
 	  "category":{"type":"Array","value":["classroom"]},
 	  "floor":{"type":"Integer","value":1},
-	  "refBuilding":{"type":"Relationship","value":"urn:ngsi-ld:Building:002"}
+	  "refBuilding":{"type":"Relationship","value":"urn:ngsi-ld:Building:001"}
         }	
    ]
 }'
